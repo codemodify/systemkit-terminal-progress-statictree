@@ -171,15 +171,17 @@ func (thisRef *staticTree) drawTreeInLoop() {
 		thisRef.theTerminal.CursorHide()
 	}
 
+	defer func() {
+		if thisRef.tree.Config.HideCursor {
+			thisRef.theTerminal.CursorShow()
+		}
+	}()
+
 	thisRef.drawTree()
 
 	<-thisRef.stopChannel
 
 	thisRef.drawTree()
-
-	if thisRef.tree.Config.HideCursor {
-		thisRef.theTerminal.CursorShow()
-	}
 
 	thisRef.finishedChannel <- true
 }
