@@ -20,3 +20,5 @@
 ### What it offers
 - Robust, fast, super slim, no external dependencies
 - No Animation
+
+![](https://github.com/codemodify/systemkit-terminal-progress-statictree/raw/master/dox/demo.gif)
