@@ -59,6 +59,11 @@ func (thisRef *staticTree) Run() {
 	thisRef.mutex.Lock()
 	defer thisRef.mutex.Unlock()
 
+	// 0.
+	if thisRef.tree.Config.HideCursor {
+		thisRef.theTerminal.CursorHide()
+	}
+
 	// 1. save cursor position
 	thisRef.savedCursorX, thisRef.savedCursorY = thisRef.theTerminal.CursorPositionQuery()
 
@@ -75,7 +80,7 @@ func (thisRef *staticTree) Run() {
 	updateTreeStatus(thisRef.tree, thisRef.tree.ID, isQueued, isRunning, isSuccess)
 
 	// 4.
-	go thisRef.drawTreeInLoop()
+	thisRef.drawTree()
 }
 
 // Success -
@@ -164,24 +169,10 @@ func (thisRef *staticTree) drawTree() {
 
 	thisRef.theTerminal.CursorMoveToXY(thisRef.savedCursorX, thisRef.savedCursorY)
 	fmt.Fprintf(thisRef.tree.Config.Writer, renderedTree)
-}
 
-func (thisRef *staticTree) drawTreeInLoop() {
-	if thisRef.tree.Config.HideCursor {
-		thisRef.theTerminal.CursorHide()
-	}
-
-	defer func() {
+	if !thisRef.tree.isQueued && !thisRef.tree.isRunning {
 		if thisRef.tree.Config.HideCursor {
 			thisRef.theTerminal.CursorShow()
 		}
-	}()
-
-	thisRef.drawTree()
-
-	<-thisRef.stopChannel
-
-	thisRef.drawTree()
-
-	thisRef.finishedChannel <- true
+	}
 }
